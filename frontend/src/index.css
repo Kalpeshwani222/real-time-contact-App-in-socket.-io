@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.main-div {
+  margin-top: 20rem;
+  margin-left: 20rem;
+}
+
+input {
+  font-size: larger;
+}
+button {
+  font-size: larger;
+  margin-left: 1.5rem;
+}
+
+span {
+  padding: 5px;
+  background-color: yellow;
+}
