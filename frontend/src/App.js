@@ -7,33 +7,11 @@ const socket = io.connect("http://localhost:5000");
 const userName = nanoid(4);
 
 const App = () => {
-  // const [message,setMessage] = useState("");
-  // const [chat,setChat] = useState([]);
-
-  // const sendChat = (e) =>{
-  //   e.preventDefault();
-
-  //   socket.emit("chat",{message,userName});
-
-  //   setMessage('');
-  // }
-
-  // useEffect(() => {
-  //  socket.on("chat",(payload) =>{
-  //    setChat([...chat,payload])
-  //  })
-  // })
+  
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [socketConnected, setSocketConnected] = useState(false);
-
-  //  useEffect(() => {
-  //  socket = io.connect(ENDPOINT);
-  // //  socket.on("connection",()=>{
-  // //    setSocketConnected(true);
-  // //  })
-  // });
+  // const [socketConnected, setSocketConnected] = useState(false);
 
   const fetchMessages = async () => {
     try {
@@ -67,7 +45,7 @@ const App = () => {
         config
       );
 
-      socket.emit("chat", data);
+      socket.emit("chat", data,userName);
 
       setMessages([...messages, data]);
     } catch (error) {
@@ -77,9 +55,18 @@ const App = () => {
   };
 
   useEffect(() => {
-    socket.on("chat", (payload) => {
-      setMessages([...messages, payload]);
-      console.log(payload);
+
+    socket.on("chat", (payload,name) => {
+
+
+      if(userName != name){
+        setMessages([...messages, payload]);
+     
+      } 
+     
+      
+      
+      // console.log(payload);
     });
   });
 

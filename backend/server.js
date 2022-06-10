@@ -54,9 +54,10 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("connected to socket.io");
 
-  socket.on("chat", (payload) => {
-    console.log(payload);
+  socket.on("chat", (payload,userName) => {
+    console.log(payload );
+    console.log(userName);
 
-    io.emit("chat", payload);
+    io.emit("chat", payload,userName);
   });
 });
