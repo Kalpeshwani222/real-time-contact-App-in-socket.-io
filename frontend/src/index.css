@@ -5,11 +5,37 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: whitesmoke;
 }
 
-.main-div {
-  margin-top: 20rem;
-  margin-left: 20rem;
+.contact-box {
+  list-style-type: none;
+}
+.card {
+  background-color: rgb(122, 53, 187);
+}
+.card-body {
+  flex: 1 1 auto;
+  padding: 10px 10px;
+  line-height: 0.8rem;
+}
+
+.text {
+  font-size: 20px;
+  font-variant: bold;
+  color: #fff;
+}
+
+.add-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.main-heading {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  margin-top: 0.6rem;
 }
 
 input {
@@ -18,9 +44,17 @@ input {
 button {
   font-size: larger;
   margin-left: 1.5rem;
+  background-color: rgb(122, 53, 187);
+  color: #fff;
+  width: 100px;
+  border: none;
+  height: 40px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
-span {
+/* span {
   padding: 5px;
   background-color: yellow;
-}
+} */
