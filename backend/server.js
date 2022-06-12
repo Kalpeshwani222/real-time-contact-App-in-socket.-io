@@ -52,12 +52,22 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("connected to socket.io");
+  // console.log("connected to socket.io");
 
   socket.on("chat", (payload,userName) => {
-    console.log(payload );
-    console.log(userName);
-
-    io.emit("chat", payload,userName);
+    // console.log(payload.message + payload.mobile); 
+    // console.log(userName);
+    //send back to the frontend
+    io.emit("chat", payload,userName);  
   });
+
+
+  //delete
+socket.on("delete",(payload) =>{
+ //send back to the frontend
+   io.emit("delete", payload);
+}) 
+
+
+
 });

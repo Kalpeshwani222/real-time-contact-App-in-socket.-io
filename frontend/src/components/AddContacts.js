@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import { nanoid } from "nanoid";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const socket = io.connect("http://localhost:5000");
 const userName = nanoid(4);
@@ -9,6 +10,7 @@ const userName = nanoid(4);
 const AddContacts = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [mobile, setMobile] = useState("");
 
   const fetchMessages = async () => {
     try {
@@ -24,6 +26,7 @@ const AddContacts = () => {
     fetchMessages();
   }, []);
 
+  // send
   const sendMessage = async (e) => {
     e.preventDefault();
 
@@ -34,10 +37,12 @@ const AddContacts = () => {
         },
       };
       setNewMessage("");
+      setMobile("");
       const { data } = await axios.post(
         `/api/messages/send`,
         {
           newMessage,
+          mobile,
         },
         config
       );
@@ -51,11 +56,47 @@ const AddContacts = () => {
     }
   };
 
+  // delete
+  const deleteHandler = async (id) => {
+    if (window.confirm("are you sure")) {
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        const { data } = await axios.delete(`/api/messages/${id}`, config);
+        console.log(data);
+
+        // socket.emit("delete", data);
+
+        let de = messages.filter((item) => item._id !== id);
+        socket.emit("delete", data);
+
+        setMessages([...de]);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+  };
+
   useEffect(() => {
     socket.on("chat", (payload, name) => {
       if (userName != name) {
         setMessages([...messages, payload]);
       }
+    });
+
+    //delete
+    socket.on("delete", (payload) => {
+      console.log(payload.deleteContact._id);
+      // console.log(messages);
+
+      let de = messages.filter(
+        (item) => item._id !== payload.deleteContact._id
+      );
+      setMessages([...de]);
     });
   });
 
@@ -68,16 +109,6 @@ const AddContacts = () => {
         <div className="row add-data">
           <div className="col-md-8 col-lg-6">
             <form onSubmit={sendMessage}>
-              {/* <input
-            type=""
-            name="chat"
-            placeholder="send text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-
-          <button type="submit">Send</button> */}
-
               <div
                 className="card"
                 style={{
@@ -93,6 +124,9 @@ const AddContacts = () => {
                     Name
                   </label>
                   <input
+                    style={{
+                      boxShadow: "none",
+                    }}
                     type="text"
                     className="form-control"
                     value={newMessage}
@@ -100,12 +134,20 @@ const AddContacts = () => {
                   />
                 </div>
 
-                {/* <div className="mb-2">
+                <div className="mb-2">
                   <label for="mobile" className="form-label">
                     Mobile no
                   </label>
-                  <input type="number" className="form-control" />
-                </div> */}
+                  <input
+                    style={{
+                      boxShadow: "none",
+                    }}
+                    type="number"
+                    className="form-control"
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
+                  />
+                </div>
 
                 {/* <button type="submit" className="btn btn-primary">
                   ADD
@@ -131,7 +173,27 @@ const AddContacts = () => {
                           {payload.message}{" "}
                         </p>
 
-                        <p className="text">wani@gmail.com</p>
+                        <p className="text">{payload.mobile}</p>
+
+                        {/* delete  */}
+                        <span>
+                          <button
+                            style={{ background: "yellow" }}
+                            onClick={() => deleteHandler(payload._id)}
+                          >
+                            delete
+                          </button>
+                        </span>
+
+                        {/* <Link to={`/note/${note._id}`}>
+                              <Fab
+                                color="primary"
+                                aria-label="edit"
+                                size="small"
+                              >
+                                <EditIcon />
+                              </Fab>
+                            </Link>  */}
                       </div>
                     </li>
                   </ul>

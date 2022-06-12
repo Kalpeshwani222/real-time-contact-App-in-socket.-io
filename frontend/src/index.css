@@ -12,7 +12,9 @@ body {
   list-style-type: none;
 }
 .card {
-  background-color: rgb(122, 53, 187);
+  /* background-color: rgb(122, 53, 187); */
+
+  background-color: #663399;
 }
 .card-body {
   flex: 1 1 auto;
@@ -37,10 +39,12 @@ body {
   display: flex;
   margin-top: 0.6rem;
 }
-
-input {
-  font-size: larger;
+.delete-btn {
+  display: flex;
+  display: inline;
+  align-items: flex-end;
 }
+
 button {
   font-size: larger;
   margin-left: 1.5rem;
