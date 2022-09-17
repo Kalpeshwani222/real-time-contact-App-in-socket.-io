@@ -12,6 +12,13 @@ const AddContacts = () => {
   const [newMessage, setNewMessage] = useState("");
   const [mobile, setMobile] = useState("");
 
+  const [show, setShow] = useState(false);
+
+  //update
+  const [upname, SetupName] = useState("");
+  const [upmobile, setupMobile] = useState("");
+  const [upId, setUpId] = useState("");
+
   const fetchMessages = async () => {
     try {
       const { data } = await axios.get("/api/messages");
@@ -69,8 +76,6 @@ const AddContacts = () => {
         const { data } = await axios.delete(`/api/messages/${id}`, config);
         console.log(data);
 
-        // socket.emit("delete", data);
-
         let de = messages.filter((item) => item._id !== id);
         socket.emit("delete", data);
 
@@ -79,6 +84,51 @@ const AddContacts = () => {
         console.log(error.response.data.message);
       }
     }
+  };
+
+  // view single data
+  const viewSingledata = async (id) => {
+    setShow(true);
+
+    const { data } = await axios.get(`/api/messages/${id}`);
+
+    SetupName(data.message);
+    setupMobile(data.mobile);
+    setUpId(data._id);
+  };
+
+  //update data api call
+  const updateData = async (e) => {
+    e.preventDefault();
+
+    console.log(upId);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { data } = await axios.put(
+      `/api/messages/${upId}`,
+      { upname, upmobile },
+      config
+    );
+
+    socket.emit("update", data);
+
+    setMessages(
+      messages.map((ele) => {
+        if (ele._id === data.updatedData._id) {
+          return {
+            ...ele,
+            message: data.updatedData.message,
+            mobile: data.updatedData.mobile,
+          };
+        }
+        return ele;
+      })
+    );
+    setShow(false);
   };
 
   useEffect(() => {
@@ -97,6 +147,23 @@ const AddContacts = () => {
         (item) => item._id !== payload.deleteContact._id
       );
       setMessages([...de]);
+    });
+
+    //update
+    socket.on("update", (payload) => {
+      console.log(payload);
+      setMessages(
+        messages.map((ele) => {
+          if (ele._id === payload.updatedData._id) {
+            return {
+              ...ele,
+              message: payload.updatedData.message,
+              mobile: payload.updatedData.mobile,
+            };
+          }
+          return ele;
+        })
+      );
     });
   });
 
@@ -152,51 +219,60 @@ const AddContacts = () => {
                 {/* <button type="submit" className="btn btn-primary">
                   ADD
                 </button> */}
-                <button type="submit">Send</button>
+                <button type="submit">Add </button>
               </div>
             </form>
           </div>
         </div>
 
         {/* contacts list */}
-        <div className="row container-fluid mt-3">
-          <div className="col -md-10">
+        <div className="row container-fluid mt-3 justify-content-center">
+          <div className="col-md-8 ">
             <h6>contacts Lists</h6>
             {messages.map((payload, index) => {
               return (
                 <>
-                  <ul className="contact-box" key={index}>
-                    <li className="card border-light mb-3">
-                      <div className="card-body">
+
+                  <div className="card mb-2">
+                    <div
+                      className="card-profile"
+                     
+                    >
+                      <img
+                        src="./img.jfif"
+                        alt="profile-img"
+                        className="profile-image"
+                      />
+
+                      <div className="card-profile-info">
                         <p className="text">
                           <span className="">{userName} : </span>{" "}
-                          {payload.message}{" "}
+                          {payload.message}
                         </p>
 
                         <p className="text">{payload.mobile}</p>
-
-                        {/* delete  */}
-                        <span>
-                          <button
-                            style={{ background: "yellow" }}
-                            onClick={() => deleteHandler(payload._id)}
-                          >
-                            delete
-                          </button>
-                        </span>
-
-                        {/* <Link to={`/note/${note._id}`}>
-                              <Fab
-                                color="primary"
-                                aria-label="edit"
-                                size="small"
-                              >
-                                <EditIcon />
-                              </Fab>
-                            </Link>  */}
                       </div>
-                    </li>
-                  </ul>
+                     
+
+                        <div className="btns-div">
+                        <button
+                         className="btn btn-danger"
+                          onClick={() => deleteHandler(payload._id)}
+                        >
+                          Delete
+                        </button>
+                
+                        <button
+                        className="btn btn-warning"
+
+                          onClick={() => viewSingledata(payload._id)}
+                        >
+                          Edit
+                        </button>
+                        </div>
+                      
+                    </div>
+                  </div>
                 </>
               );
             })}
@@ -204,6 +280,75 @@ const AddContacts = () => {
         </div>
         {/* end contacts list */}
       </div>
+
+      {/* for model */}
+
+      {show ? (
+        <>
+          <div
+            className="modal"
+            style={{
+              position: "fixed",
+              left: "0",
+              right: "0",
+              top: "0",
+              bottom: "0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <form onSubmit={updateData}>
+              <div
+                style={{
+                  width: "500px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <div>
+                  <input
+                    type="text"
+                    value={upname}
+                    onChange={(e) => SetupName(e.target.value)}
+                    style={{
+                      width: "240px",
+                      height: "35px",
+                    }}
+                  />
+                  <br />
+                  <br />
+
+                  <input
+                    type="text"
+                    value={upmobile}
+                    onChange={(e) => setupMobile(e.target.value)}
+                    style={{
+                      width: "240px",
+                      height: "35px",
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <button type="submit" style={{ background: "yellow" }}>
+                      Update
+                    </button>
+
+                    <button onClick={() => setShow(false)}>Close</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </>
+      ) : (
+        null
+      )}
     </>
   );
 };

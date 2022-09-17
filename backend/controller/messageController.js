@@ -35,15 +35,59 @@ const sendMesssage = async (req, res) => {
 //delete the contact
 
 const deleteContact = async (req, res) => {
-
   const contact = await Message.findById(req.params.id);
-  
+
   try {
     const deleteContact = await contact.remove();
-    res.status(200).send({ message: "Deleted Successfully",deleteContact });
+    res.status(200).send({ message: "Deleted Successfully", deleteContact });
   } catch (error) {
     res.status(500).send({ message: "Error" });
   }
 };
 
-module.exports = { getMessages, sendMesssage, deleteContact };
+//get single data
+const getSingleContact = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const indvuser = await Message.findById(id);
+
+    return res.status(200).json(indvuser);
+  } catch (e) {
+    return res.status(401).json({ message: "Not found" });
+  }
+};
+
+//update the contact
+
+const updateContact = async (req, res) => {
+  const { upname, upmobile } = req.body;
+
+
+  if (!req.params.id) {
+    return res.status(403).json({ message: "Not true" });
+  }
+
+  try {
+  
+
+    const updatedData = await Message.findByIdAndUpdate(
+      { _id: req.params.id }, {
+        $set: { message: upname, mobile: upmobile },
+      },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json({ updatedData });
+  } catch (error) {
+    return res.status(401).json({ error });
+  }
+};
+module.exports = {
+  getMessages,
+  sendMesssage,
+  deleteContact,
+  updateContact,
+  getSingleContact,
+};
